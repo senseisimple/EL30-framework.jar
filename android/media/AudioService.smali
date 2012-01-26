@@ -1530,12 +1530,18 @@
 .end method
 
 .method private checkForRingerModeChange(II)Z
-    .registers 8
+    .registers 10
     .parameter "oldIndex"
     .parameter "direction"
 
     .prologue
+    const/4 v3, 0x2
+
     const/4 v4, 0x1
+
+	const/4 v5, -0x1
+
+	const-string/jumbo v6, "vibrate_in_silent"
 
     .line 1216
     const/4 v0, 0x1
@@ -1548,14 +1554,10 @@
     .local v1, newRingerMode:I
     iget v2, p0, Landroid/media/AudioService;->mRingerMode:I
 
-    const/4 v3, 0x2
-
     if-ne v2, v3, :cond_2a
 
     .line 1221
-    const/4 v2, -0x1
-
-    if-ne p2, v2, :cond_1e
+    if-ne p2, v5, :cond_1e
 
     add-int/lit8 v2, p1, 0x5
 
@@ -1566,9 +1568,7 @@
     .line 1224
     iget-object v2, p0, Landroid/media/AudioService;->mContentResolver:Landroid/content/ContentResolver;
 
-    const-string/jumbo v3, "vibrate_in_silent"
-
-    invoke-static {v2, v3, v4}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+    invoke-static {v2, v6, v4}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
 
     move-result v2
 
@@ -1603,6 +1603,8 @@
 
     .line 1229
     :cond_2a
+    if-ne v2, v4, :cond0
+
     if-ne p2, v4, :cond_2e
 
     .line 1231
@@ -1612,6 +1614,33 @@
 
     .line 1234
     :cond_2e
+    if-ne p2, v5, :cond_1e
+
+    const/4 v1, 0x0
+
+    goto :goto_1e
+
+    :cond0
+    if-ne p2, v4, :cond2
+
+    iget-object v2, p0, Landroid/media/AudioService;->mContentResolver:Landroid/content/ContentResolver;
+
+    invoke-static {v2, v6, v4}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v2
+
+    if-ne v2, v4, :cond1
+
+    move v1, v4
+
+    goto :goto_1e
+
+    :cond1
+    move v1, v3
+
+    goto :goto_1e
+
+    :cond2
     const/4 v0, 0x0
 
     goto :goto_1e
